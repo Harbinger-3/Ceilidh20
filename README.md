@@ -212,7 +212,7 @@ This parameter allows you to modify the internal cryptographic state. It can be 
 
 ---
 
-# ⚠️⚠️⚠️ WARNING ⚠️⚠️⚠️
+# WARNING ⚠️
 
 This cryptographic system is **custom-implemented** and has not been widely reviewed by the cryptographic community. It was originally developed <b>out of boredom</u>, and became an open-source project. <h3>Do not use this cipher for sensitive data or in production environments!</h3>
 
