@@ -110,37 +110,78 @@ To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, a
 
 <h1>Ceilidh20 Encryption & Decryption Example</h1>
 
+<!-- Input textarea for the user -->
+<h2>Enter Text to Encrypt:</h2>
+<textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Button to trigger encryption and decryption -->
+<button onclick="processEncryptionDecryption()">Encrypt and Decrypt</button>
+
+<!-- Containers to display results on the page -->
+<h2>Original Data</h2>
+<p id="originalData"></p>
+
+<h2>Encrypted Data</h2>
+<p id="encryptedData"></p>
+
+<h2>Decrypted Data</h2>
+<p id="decryptedData"></p>
+
+<h2>Is Decryption Success?</h2>
+<p id="isSuccess"></p>
+
 <script>
-// Generate random 32-byte key, 32-byte IV, and 24-byte nonce
-const key = new Uint8Array(32);
-const iv = new Uint8Array(32);
-const nonce = new Uint8Array(24);
+// Function to handle encryption and decryption when the button is clicked
+function processEncryptionDecryption() {
+    // Retrieve the plaintext input from the textarea
+    const plaintext = document.getElementById("inputText").value;
 
-crypto.getRandomValues(key);    // Fill the key with random bytes
-crypto.getRandomValues(iv);     // Fill the IV with random bytes
-crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
+    // Generate random 32-byte key, 32-byte IV, and 24-byte nonce
+    const key = new Uint8Array(32);
+    const iv = new Uint8Array(32);
+    const nonce = new Uint8Array(24);
 
-const plaintext = "This is a secret message!";
+    crypto.getRandomValues(key);    // Fill the key with random bytes
+    crypto.getRandomValues(iv);     // Fill the IV with random bytes
+    crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
 
-// Encrypt the plaintext using Ceilidh20
-const encryptedData = Ceilidh20(plaintext, {
-    key: key,         // 32-byte key
-    iv: iv,           // 32-byte initialization vector
-    nonce: nonce,     // 24-byte nonce
-    isEncrypt: true   // Encrypt the plaintext
-});
+    // Display the original plaintext on the page
+    document.getElementById("originalData").textContent = plaintext;
 
-console.log("Encrypted Data:", String.fromCharCode.apply(null, encryptedData));
+    // Encrypt the plaintext using Ceilidh20
+    const encryptedData = Ceilidh20(plaintext, {
+        key: key,         // 32-byte key
+        iv: iv,           // 32-byte initialization vector
+        nonce: nonce,     // 24-byte nonce
+        isEncrypt: true   // Encrypt the plaintext
+    });
 
-// Decrypt the ciphertext using the same key, iv, and nonce
-const decryptedData = Ceilidh20(encryptedData, {
-    key: key,         // Same 32-byte key used for encryption
-    iv: iv,           // Same 32-byte initialization vector used for encryption
-    nonce: nonce,     // Same 24-byte nonce used for encryption
-    isEncrypt: false  // Decrypt the ciphertext
-});
+    // Convert the encrypted data to a readable string (if needed)
+    const encryptedString = String.fromCharCode.apply(null, encryptedData);
 
-console.log("Decrypted Data:", String.fromCharCode.apply(null, decryptedData));
+    // Display the encrypted data on the page
+    document.getElementById("encryptedData").textContent = encryptedString;
+
+    // Decrypt the ciphertext using the same key, iv, and nonce
+    const decryptedData = Ceilidh20(encryptedData, {
+        key: key,         // Same 32-byte key used for encryption
+        iv: iv,           // Same 32-byte initialization vector used for encryption
+        nonce: nonce,     // Same 24-byte nonce used for encryption
+        isEncrypt: false  // Decrypt the ciphertext
+    });
+
+    // Convert the decrypted data back to a string
+    const decryptedString = String.fromCharCode.apply(null, decryptedData);
+
+    // Display the decrypted data on the page
+    document.getElementById("decryptedData").textContent = decryptedString;
+
+    // Check if decryption was successful by comparing decrypted data with the original plaintext
+    const decryptionSuccess = decryptedString === plaintext;
+
+    // Display the result of the decryption check
+    document.getElementById("isSuccess").textContent = decryptionSuccess ? "Yes" : "No";
+}
 </script>
 
 </body>
@@ -168,44 +209,91 @@ You can modify the cryptographic state using the `stateVariant` parameter, which
 
 <h1>Ceilidh20 Encryption & Decryption with Custom State Variant</h1>
 
-<!-- Encryption with Custom State Variant -->
-<h2>Encryption with Custom State Variant</h2>
+<!-- Input textarea for the user -->
+<h2>Enter Text to Encrypt:</h2>
+<textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Input for custom state array -->
+<h2>Enter State Variant (comma separated values, e.g., 7,9,13,18):</h2>
+<input type="text" id="stateArrayInput" placeholder="Enter state variant array"><br><br>
+
+<!-- Button to trigger encryption and decryption -->
+<button onclick="processEncryptionDecryption()">Encrypt and Decrypt</button>
+
+<!-- Containers to display results on the page -->
+<h2>Original Data</h2>
+<p id="originalData"></p>
+
+<h2>Encrypted Data</h2>
+<p id="encryptedData"></p>
+
+<h2>Decrypted Data</h2>
+<p id="decryptedData"></p>
+
+<h2>Is Decryption Success?</h2>
+<p id="isSuccess"></p>
+
 <script>
-// Generate random 32-byte key, 32-byte IV, and 24-byte nonce
-const key = new Uint8Array(32);
-const iv = new Uint8Array(32);
-const nonce = new Uint8Array(24);
+// Function to handle encryption and decryption when the button is clicked
+function processEncryptionDecryption() {
+    // Retrieve the plaintext input from the textarea
+    const plaintext = document.getElementById("inputText").value;
 
-crypto.getRandomValues(key);    // Fill the key with random bytes
-crypto.getRandomValues(iv);     // Fill the IV with random bytes
-crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
+    // Retrieve and parse the state array input
+    const stateArrayInput = document.getElementById("stateArrayInput").value;
+    const stateVariant = stateArrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
 
-const plaintext = "This is a secret message!";
+    // Default state variant if no input is provided
+    const defaultStateVariant = [7, 9, 13, 18];
+    const finalStateVariant = stateVariant.length > 0 ? stateVariant : defaultStateVariant;
 
-// Custom state variant: [7, 9, 13, 18]
-const encryptedDataWithState = Ceilidh20(plaintext, {
-    key: key,                      // 32-byte key
-    iv: iv,                        // 32-byte initialization vector
-    nonce: nonce,                  // 24-byte nonce
-    stateVariant: [7, 9, 13, 18],  // Custom state variant
-    isEncrypt: true                // Flag to indicate encryption mode
-});
+    // Display the original plaintext and selected state array on the page
+    document.getElementById("originalData").textContent = `Plaintext: ${plaintext}`;
+    document.getElementById("isSuccess").textContent = `Using state variant: ${finalStateVariant.join(', ')}`;
 
-console.log("Encrypted Data with Custom State:", String.fromCharCode.apply(null, encryptedDataWithState));
-</script>
+    // Generate random 32-byte key, 32-byte IV, and 24-byte nonce
+    const key = new Uint8Array(32);
+    const iv = new Uint8Array(32);
+    const nonce = new Uint8Array(24);
 
-<!-- Decryption with Custom State Variant -->
-<h2>Decryption with Custom State Variant</h2>
-<script>
-const decryptedDataWithState = Ceilidh20(encryptedDataWithState, {
-    key: key,                      // Same 32-byte key
-    iv: iv,                        // Same 32-byte IV
-    nonce: nonce,                  // Same 24-byte nonce
-    stateVariant: [7, 9, 13, 18],  // Custom state variant
-    isEncrypt: false               // Flag to indicate decryption mode
-});
+    crypto.getRandomValues(key);    // Fill the key with random bytes
+    crypto.getRandomValues(iv);     // Fill the IV with random bytes
+    crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
 
-console.log("Decrypted Data with Custom State:", String.fromCharCode.apply(null, decryptedDataWithState));
+    // Encrypt the plaintext using Ceilidh20 with custom state variant
+    const encryptedDataWithState = Ceilidh20(plaintext, {
+        key: key,                      // 32-byte key
+        iv: iv,                        // 32-byte initialization vector
+        nonce: nonce,                  // 24-byte nonce
+        stateVariant: finalStateVariant,    // Custom state variant
+        isEncrypt: true                // Flag to indicate encryption mode
+    });
+
+    // Convert the encrypted data to a readable string (if needed)
+    const encryptedString = String.fromCharCode.apply(null, encryptedDataWithState);
+
+    // Display the encrypted data on the page
+    document.getElementById("encryptedData").textContent = `Encrypted: ${encryptedString}`;
+
+    // Decrypt the ciphertext using the same key, iv, and nonce
+    const decryptedDataWithState = Ceilidh20(encryptedDataWithState, {
+        key: key,                      // Same 32-byte key
+        iv: iv,                        // Same 32-byte initialization vector
+        nonce: nonce,                  // Same 24-byte nonce
+        stateVariant: finalStateVariant,    // Custom state variant
+        isEncrypt: false               // Flag to indicate decryption mode
+    });
+
+    // Convert the decrypted data back to a string
+    const decryptedString = String.fromCharCode.apply(null, decryptedDataWithState);
+
+    // Display the decrypted data on the page
+    document.getElementById("decryptedData").textContent = `Decrypted: ${decryptedString}`;
+
+    // Check if the decryption is successful
+    const isDecryptionSuccessful = (plaintext === decryptedString);
+    document.getElementById("isSuccess").textContent += ` Decryption Success: ${isDecryptionSuccessful}`;
+}
 </script>
 
 </body>
