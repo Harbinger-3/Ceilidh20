@@ -181,5 +181,15 @@ function Ceilidh20(e, $) {
     return n && l.fill(0), (e = null), i;
 }
 if (typeof module != 'undefined' && module.exports) {
-    module.exports = Ceilidh20;
+    module.exports = { 
+        Mash, 
+        Alea, 
+        toBytes, 
+        uintArray, 
+        arraySlice, 
+        get32, 
+        rotl, 
+        Ceilidh20_main, 
+        Ceilidh20 
+    };
 }
