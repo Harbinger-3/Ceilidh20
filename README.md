@@ -1,3 +1,5 @@
+![Ceilidh20 Banner Logo](images/ceilidh20-banner-logo.png)
+
 # Ceilidh20
 
 Ceilidh20, inspired by the traditional Scottish and Irish ceilidh dance, is a custom-implemented stream cipher designed for encryption and decryption, offering enhanced randomization for high-entropy, unpredictable ciphertext outputs. It supports legacy and modern JavaScript environments and is optimized for compatibility with `TypedArray` and `Buffer` types, enabling seamless integration into both browser and Node.js environments.
