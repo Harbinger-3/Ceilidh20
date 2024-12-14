@@ -1,4 +1,6 @@
-![Ceilidh20 Banner Logo](images/ceilidh20-banner-logo.png)
+<p align="center">
+<img src="images/ceilidh20-banner-logo.png" alt="Ceilidh20 Banner Logo" width="743" height="600" />
+</p>
 
 # Ceilidh20
 
@@ -295,6 +297,17 @@ Key differences include a **larger nonce**, the addition of an **IV** for **rand
 **Ceilidh20** is an open-source project released under the [MIT License](./LICENSE.txt). It is available on GitHub for anyone to contribute or use.
 
 We welcome contributions, but please review the **Warning** section before using this cipher in production systems.
+
+# Donations
+
+If you find this project useful or want to support its continued development, please consider **donating**.
+Your contributions will help improve and maintain the project, as well as fund future enhancements.
+
+<p align="center">
+<a href="https://github.com/Harbinger-3/donate.md/blob/main/donation/donate.md" alt="Donate shield"><img src="https://img.shields.io/badge/-Donate-red?logo=undertale" width="170" /></a>
+</p>
+
+Your support is greatly appreciated and helps keep the project alive! 🫶🏻🫶🏻🫶🏻
 
 # License
 
