@@ -276,7 +276,7 @@ This parameter allows you to modify the internal cryptographic state. It can be 
 
 # WARNING ⚠️
 
-This cryptographic system is **custom-implemented** and has not been widely reviewed by the cryptographic community. It was originally developed <b>out of boredom</u>, and became an open-source project. <h3>Do not use this cipher for sensitive data or in production environments!</h3>
+This cryptographic system is **custom-implemented** and has not been widely reviewed by the cryptographic community. It was initially developed <b>out of boredom</u>, and became an open-source project. <h3>Do not use this cipher for sensitive data or in production environments!</h3>
 
 The design was based on **ChaCha20** and/or **Salsa20** and it was modified to address some of the challenges associated with stream ciphers, such as <u>deterministic outputs</u> which can have vulnerabilities like predictability and susceptibility to known-plaintext attacks, where an attacker can exploit the repetitive nature of the cipher to recover the secret key or plaintext.
 
