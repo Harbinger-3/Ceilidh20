@@ -180,3 +180,6 @@ function Ceilidh20(e, $) {
     }
     return n && l.fill(0), (e = null), i;
 }
+if (typeof module != 'undefined' && module.exports) {
+    module.exports = Ceilidh20;
+}
