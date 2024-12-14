@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/ceilidh20-banner-logo.png" alt="Ceilidh20 Banner Logo" width="768" height="768" />
+![Ceilidh20 Banner Logo](images/ceilidh20-banner-logo.png)
 </p>
 
 # Ceilidh20
