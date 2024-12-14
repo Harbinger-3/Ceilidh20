@@ -34,7 +34,27 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 **Browsers**: Compatible with most modern web browsers.
 
-**Legacy versions**: Not yet tested in older versions of some environments.
+**Legacy versions**: Not yet tested in some legacy environments, only tested in a simulated environment.
+
+---
+
+# Installation
+
+## Terminal
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo git clone https://github.com/Harbinger-3/Ceilidh20
+cd Ceilidh20
+```
+
+## HTML
+
+Include the following script in your HTML file:
+
+```bash
+<script src="https://raw.githubusercontent.com/Harbinger-3/Ceilidh20/refs/heads/main/src/ceilidh20.min.js"></script>
+```
 
 ---
 
@@ -154,13 +174,14 @@ console.log("Decrypted Data with Custom State:", String.fromCharCode.apply(null,
 
 ---
 
-## Example: File Encryption with Node.js (optional)
+## Example: File Encryption with Node.js
 
 ### Encryption Example:
 
 ```javascript
 const fs = require('fs');
 const crypto = require('crypto');
+const Ceilidh20 = require('./src/ceilidh20.js');
 
 const key = crypto.randomBytes(32); // 32 bytes key
 const iv = crypto.randomBytes(32);  // 32 bytes IV
@@ -181,6 +202,7 @@ fs.writeFileSync("sample.png.encrypted", encryptedOutput);
 ```javascript
 const fs = require('fs');
 const crypto = require('crypto');
+const Ceilidh20 = require('./src/ceilidh20.js');
 
 const key = Buffer.from([/* your 32-bytes key here */]);
 const iv = Buffer.from([/* your 32-bytes iv here */]);
