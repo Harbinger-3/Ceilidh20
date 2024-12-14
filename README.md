@@ -62,7 +62,7 @@ Include the following script in your HTML file:
 Ceilidh20(message, {
     key: key,
     iv: iv,
-    nonce: nonce
+    nonce: nonce,
     stateVariant: array,
     isEncrypt: boolean
 });
