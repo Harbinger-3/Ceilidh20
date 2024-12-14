@@ -28,6 +28,12 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 ---
 
+# What is `stateVariant`?
+
+The `stateVariant` refers to an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process.
+
+---
+
 ## Supported Environments
 
 **Node.js**: Fully compatible.
@@ -67,6 +73,7 @@ Ceilidh20(data, {
     key: key,            // 32-byte key
     iv: iv,              // 32-byte initialization vector
     nonce: nonce         // 24-byte nonce
+    stateVariant: array, // optional custom state variant
     isEncrypt: boolean   // Flag to indicate encryption or decryption
 });
 ```
