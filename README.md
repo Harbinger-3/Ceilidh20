@@ -41,8 +41,14 @@ The `stateVariant` is an optional parameter that allows you to modify the intern
 You can clone the repository to your local machine using the following commands:
 
 ```bash
+# root
 sudo apt update && sudo apt upgrade -y
 sudo git clone https://github.com/Harbinger-3/Ceilidh20
+cd Ceilidh20
+
+# non-root
+apt update && apt upgrade -y
+git clone https://github.com/Harbinger-3/Ceilidh20
 cd Ceilidh20
 ```
 
