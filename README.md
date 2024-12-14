@@ -1,6 +1,4 @@
-<p align="center">
 ![Ceilidh20 Banner Logo](images/ceilidh20-banner-logo.png)
-</p>
 
 # Ceilidh20
 
