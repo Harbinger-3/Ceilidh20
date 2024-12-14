@@ -30,13 +30,15 @@ The `stateVariant` is an optional parameter that allows you to modify the intern
 
 **Browsers**: Compatible with most modern web browsers.
 
-**Legacy versions**: Not yet tested in some legacy environments, only tested in a simulated environment.
+**Legacy versions**: It hasn’t been tested widely in older systems, though it has been tested in simulated environments.
 
 ---
 
 # Installation
 
-## Terminal
+## Terminal Installation (for local setups):
+
+You can clone the repository to your local machine using the following commands:
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -44,9 +46,9 @@ sudo git clone https://github.com/Harbinger-3/Ceilidh20
 cd Ceilidh20
 ```
 
-## HTML
+## HTML Installation (for browser usage):
 
-Include the following script in your HTML file:
+To use the cipher in a browser, you can simply include the following script tag in your HTML:
 
 ```html
 <script src="https://raw.githubusercontent.com/Harbinger-3/Ceilidh20/refs/heads/main/src/ceilidh20.min.js"></script>
@@ -55,6 +57,8 @@ Include the following script in your HTML file:
 ---
 
 ## Basic Usage
+
+The `Ceilidh20` function is the core of this implementation. The function encrypts or decrypts data based on the provided parameters:
 
 ### Function Signature:
 
@@ -73,7 +77,7 @@ Ceilidh20(message, {
 - **key**: 32-byte (256-bit) encryption key.
 - **iv**: 32-byte initialization vector.
 - **nonce**: 24-byte nonce, unique for each encryption.
-- **stateVariant**: an optional custom state variant
+- **stateVariant**: an optional array of four integers to customize the cipher’s internal state
 - **isEncrypt**: Boolean flag, `true` for encryption, `false` for decryption.
 
 ---
@@ -274,7 +278,7 @@ This parameter allows you to modify the internal cryptographic state. It can be 
 
 This cryptographic system is **custom-implemented** and has not been widely reviewed by the cryptographic community. It was originally developed <b>out of boredom</u>, and became an open-source project. <h3>Do not use this cipher for sensitive data or in production environments!</h3>
 
-The design was based on **ChaCha20** and/or **Salsa20** and it was modified to address some of the challenges associated with stream ciphers.
+The design was based on **ChaCha20** and/or **Salsa20** and it was modified to address some of the challenges associated with stream ciphers, such as <u>deterministic outputs</u> which can have vulnerabilities like predictability and susceptibility to known-plaintext attacks, where an attacker can exploit the repetitive nature of the cipher to recover the secret key or plaintext.
 
 Key differences include a **larger nonce**, the addition of an **IV** for **randomization**, and **non-deterministic ciphertext** output. It is uncertain whether this is a completely new cipher or simply a <u>variant</u> derived from existing stream cipher families.
 
