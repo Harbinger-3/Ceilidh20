@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceilidh20 Custom State Variant</title>
+    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
+</head>
+<body>
+
+<h1>Ceilidh20 Encryption & Decryption with Custom State Variant</h1>
+
+<!-- Input textarea for the user -->
+<h2>Enter Text to Encrypt:</h2>
+<textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Input for custom state array -->
+<h2>Enter State Variant (comma separated values, e.g., 7,9,13,18):</h2>
+<input type="text" id="stateArrayInput" placeholder="Enter state variant array"><br><br>
+
+<!-- Button to trigger encryption and decryption -->
+<button onclick="processEncryptionDecryption()">Encrypt and Decrypt</button>
+
+<!-- Containers to display results on the page -->
+<h2>Original Data</h2>
+<p id="originalData"></p>
+
+<h2>Encrypted Data</h2>
+<p id="encryptedData"></p>
+
+<h2>Decrypted Data</h2>
+<p id="decryptedData"></p>
+
+<h2>Is Decryption Success?</h2>
+<p id="isSuccess"></p>
+
+<script>
+// Function to handle encryption and decryption when the button is clicked
+function processEncryptionDecryption() {
+    // Retrieve the plaintext input from the textarea
+    const plaintext = document.getElementById("inputText").value;
+
+    // Retrieve and parse the state array input
+    const stateArrayInput = document.getElementById("stateArrayInput").value;
+    const stateVariant = stateArrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+
+    // Default state variant if no input is provided
+    const defaultStateVariant = [7, 9, 13, 18];
+    const finalStateVariant = stateVariant.length > 0 ? stateVariant : defaultStateVariant;
+
+    // Display the original plaintext and selected state array on the page
+    document.getElementById("originalData").textContent = `Plaintext: ${plaintext}`;
+    document.getElementById("isSuccess").textContent = `Using state variant: ${finalStateVariant.join(', ')}`;
+
+    // Generate random 32-byte key, 32-byte IV, and 24-byte nonce
+    const key = new Uint8Array(32);
+    const iv = new Uint8Array(32);
+    const nonce = new Uint8Array(24);
+
+    crypto.getRandomValues(key);    // Fill the key with random bytes
+    crypto.getRandomValues(iv);     // Fill the IV with random bytes
+    crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
+
+    // Encrypt the plaintext using Ceilidh20 with custom state variant
+    const encryptedDataWithState = Ceilidh20(plaintext, {
+        key: key,                      // 32-byte key
+        iv: iv,                        // 32-byte initialization vector
+        nonce: nonce,                  // 24-byte nonce
+        stateVariant: finalStateVariant,    // Custom state variant
+        isEncrypt: true                // Flag to indicate encryption mode
+    });
+
+    // Convert the encrypted data to a readable string (if needed)
+    const encryptedString = String.fromCharCode.apply(null, encryptedDataWithState);
+
+    // Display the encrypted data on the page
+    document.getElementById("encryptedData").textContent = `Encrypted: ${encryptedString}`;
+
+    // Decrypt the ciphertext using the same key, iv, and nonce
+    const decryptedDataWithState = Ceilidh20(encryptedDataWithState, {
+        key: key,                      // Same 32-byte key
+        iv: iv,                        // Same 32-byte initialization vector
+        nonce: nonce,                  // Same 24-byte nonce
+        stateVariant: finalStateVariant,    // Custom state variant
+        isEncrypt: false               // Flag to indicate decryption mode
+    });
+
+    // Convert the decrypted data back to a string
+    const decryptedString = String.fromCharCode.apply(null, decryptedDataWithState);
+
+    // Display the decrypted data on the page
+    document.getElementById("decryptedData").textContent = `Decrypted: ${decryptedString}`;
+
+    // Check if the decryption is successful
+    const isDecryptionSuccessful = (plaintext === decryptedString);
+    document.getElementById("isSuccess").textContent += ` Decryption Success: ${isDecryptionSuccessful}`;
+}
+</script>
+
+</body>
+</html>
