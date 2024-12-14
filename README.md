@@ -221,7 +221,7 @@ console.log("Decrypted Data with Custom State:", String.fromCharCode.apply(null,
 ```javascript
 const fs = require('fs');
 const crypto = require('crypto');
-const Ceilidh20 = require('./src/ceilidh20.js');
+const { Mash, Alea, toBytes, uintArray, arraySlice, get32, rotl, Ceilidh20_main, Ceilidh20 } = require('./src/ceilidh20');
 
 const key = crypto.randomBytes(32); // 32 bytes key
 const iv = crypto.randomBytes(32);  // 32 bytes IV
@@ -242,7 +242,7 @@ fs.writeFileSync("sample.png.encrypted", encryptedOutput);
 ```javascript
 const fs = require('fs');
 const crypto = require('crypto');
-const Ceilidh20 = require('./src/ceilidh20.js');
+const { Mash, Alea, toBytes, uintArray, arraySlice, get32, rotl, Ceilidh20_main, Ceilidh20 } = require('./src/ceilidh20');
 
 const key = Buffer.from([/* your 32-bytes key here */]);
 const iv = Buffer.from([/* your 32-bytes iv here */]);
