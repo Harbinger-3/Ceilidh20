@@ -52,7 +52,7 @@ cd Ceilidh20
 
 Include the following script in your HTML file:
 
-```bash
+```html
 <script src="https://raw.githubusercontent.com/Harbinger-3/Ceilidh20/refs/heads/main/src/ceilidh20.min.js"></script>
 ```
 
