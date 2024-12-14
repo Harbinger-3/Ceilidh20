@@ -6,16 +6,6 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 ---
 
-## Ceilidh20 typically uses:
-
-**Key**: 32 bytes (256 bits) — Used to securely encrypt and decrypt data.
-
-**IV**: 32 bytes (256 bits) — Initialization vector used for randomization.
-
-**Nonce**: 24 bytes (192 bits) — A unique nonce for each encryption.
-
----
-
 ## Key Features
 
 + **Randomized Output**: Generates different ciphertext outputs even for identical plaintext inputs.
@@ -28,9 +18,9 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 ---
 
-# What is `stateVariant`?
+## What is a `stateVariant`?
 
-The `stateVariant` refers to an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process.
+The `stateVariant` is an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process, making it flexible but **it is not recommended to use**.
 
 ---
 
@@ -69,12 +59,12 @@ Include the following script in your HTML file:
 ### Function Signature:
 
 ```javascript
-Ceilidh20(data, {
-    key: key,            // 32-byte key
-    iv: iv,              // 32-byte initialization vector
-    nonce: nonce         // 24-byte nonce
-    stateVariant: array, // optional custom state variant
-    isEncrypt: boolean   // Flag to indicate encryption or decryption
+Ceilidh20(message, {
+    key: key,
+    iv: iv,
+    nonce: nonce
+    stateVariant: array,
+    isEncrypt: boolean
 });
 ```
 
@@ -83,6 +73,7 @@ Ceilidh20(data, {
 - **key**: 32-byte (256-bit) encryption key.
 - **iv**: 32-byte initialization vector.
 - **nonce**: 24-byte nonce, unique for each encryption.
+- **stateVariant**: an optional custom state variant
 - **isEncrypt**: Boolean flag, `true` for encryption, `false` for decryption.
 
 ---
@@ -90,10 +81,24 @@ Ceilidh20(data, {
 ## Encryption Usage
 
 To **encrypt** data using **Ceilidh20**, pass `isEncrypt: true`.
+To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, and **nonce** used during encryption.
 
-### Encryption Sample:
+### Encryption & Decryption Sample:
 
-```javascript
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceilidh20 Encryption & Decryption</title>
+    <script src="https://raw.githubusercontent.com/Harbinger-3/Ceilidh20/refs/heads/main/src/ceilidh20.min.js"></script>
+</head>
+<body>
+
+<h1>Ceilidh20 Encryption & Decryption Example</h1>
+
+<script>
 // Generate random 32-byte key, 32-byte IV, and 24-byte nonce
 const key = new Uint8Array(32);
 const iv = new Uint8Array(32);
@@ -114,17 +119,7 @@ const encryptedData = Ceilidh20(plaintext, {
 });
 
 console.log("Encrypted Data:", String.fromCharCode.apply(null, encryptedData));
-```
 
----
-
-## Decryption Usage
-
-To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, and **nonce** used during encryption.
-
-### Decryption Sample:
-
-```javascript
 // Decrypt the ciphertext using the same key, iv, and nonce
 const decryptedData = Ceilidh20(encryptedData, {
     key: key,         // Same 32-byte key used for encryption
@@ -134,6 +129,10 @@ const decryptedData = Ceilidh20(encryptedData, {
 });
 
 console.log("Decrypted Data:", String.fromCharCode.apply(null, decryptedData));
+</script>
+
+</body>
+</html>
 ```
 
 ---
@@ -142,9 +141,35 @@ console.log("Decrypted Data:", String.fromCharCode.apply(null, decryptedData));
 
 You can modify the cryptographic state using the `stateVariant` parameter, which accepts an array of four integers. This is **optional**, and **not recommended** unless you understand its effects.
 
-### Encryption with `stateVariant`:
+### Encryption & Decryption with `stateVariant`:
 
-```javascript
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceilidh20 Custom State Variant</title>
+    <script src="https://raw.githubusercontent.com/Harbinger-3/Ceilidh20/refs/heads/main/src/ceilidh20.min.js"></script>
+</head>
+<body>
+
+<h1>Ceilidh20 Encryption & Decryption with Custom State Variant</h1>
+
+<!-- Encryption with Custom State Variant -->
+<h2>Encryption with Custom State Variant</h2>
+<script>
+// Generate random 32-byte key, 32-byte IV, and 24-byte nonce
+const key = new Uint8Array(32);
+const iv = new Uint8Array(32);
+const nonce = new Uint8Array(24);
+
+crypto.getRandomValues(key);    // Fill the key with random bytes
+crypto.getRandomValues(iv);     // Fill the IV with random bytes
+crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
+
+const plaintext = "This is a secret message!";
+
 // Custom state variant: [7, 9, 13, 18]
 const encryptedDataWithState = Ceilidh20(plaintext, {
     key: key,                      // 32-byte key
@@ -155,11 +180,11 @@ const encryptedDataWithState = Ceilidh20(plaintext, {
 });
 
 console.log("Encrypted Data with Custom State:", String.fromCharCode.apply(null, encryptedDataWithState));
-```
+</script>
 
-### Decryption with `stateVariant`:
-
-```javascript
+<!-- Decryption with Custom State Variant -->
+<h2>Decryption with Custom State Variant</h2>
+<script>
 const decryptedDataWithState = Ceilidh20(encryptedDataWithState, {
     key: key,                      // Same 32-byte key
     iv: iv,                        // Same 32-byte IV
@@ -169,6 +194,10 @@ const decryptedDataWithState = Ceilidh20(encryptedDataWithState, {
 });
 
 console.log("Decrypted Data with Custom State:", String.fromCharCode.apply(null, decryptedDataWithState));
+</script>
+
+</body>
+</html>
 ```
 
 ---
