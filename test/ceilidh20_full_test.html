@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceilidh20 Full Test</title>
+    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
+</head>
+<body>
+
+<h1>Ceilidh20 Full Encryption & Decryption Test</h1>
+
+<!-- Input for plaintext -->
+<h2>Enter Text to Encrypt:</h2>
+<textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Input for custom key -->
+<h2>Enter Key (Base64, 32 bytes):</h2>
+<input type="text" id="keyInput" placeholder="Leave blank for random key"><br><br>
+
+<!-- Input for custom IV -->
+<h2>Enter IV (Base64, 32 bytes):</h2>
+<input type="text" id="ivInput" placeholder="Leave blank for random IV"><br><br>
+
+<!-- Input for custom nonce -->
+<h2>Enter Nonce (Base64, 24 bytes):</h2>
+<input type="text" id="nonceInput" placeholder="Leave blank for random nonce"><br><br>
+
+<!-- Input for custom state variant -->
+<h2>Enter State Variant (comma separated values, e.g., 7,9,13,18):</h2>
+<input type="text" id="stateArrayInput" placeholder="Enter state variant array" value="7,9,13,18"><br><br>
+
+<!-- Button to trigger the test -->
+<button onclick="processFullTest()">Run Full Test</button>
+
+<!-- Results display -->
+<h2>Results:</h2>
+<p id="results"></p>
+
+<script>
+// Function to handle the full test
+function processFullTest() {
+    const plaintext = document.getElementById("inputText").value;
+
+    // Parse custom state variant array input
+    const stateArrayInput = document.getElementById("stateArrayInput").value;
+    const stateVariant = stateArrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+    const originalStateVariant = [7, 12, 8, 16];
+    const finalStateVariant = (stateVariant.length == 4) ? stateVariant : originalStateVariant;
+
+    // Parse or generate key
+    const keyInput = document.getElementById("keyInput").value;
+    if (keyInput.length > 0 && keyInput.length !== 32) { document.getElementById("results").innerHTML = "<strong>ERROR:</strong> The key must be exactly 32 bytes long."; return false; }
+    const key = keyInput
+        ? new Uint8Array(keyInput.split('').map(char => char.charCodeAt(0))) 
+        : crypto.getRandomValues(new Uint8Array(32));
+
+    // Parse or generate IV
+    const ivInput = document.getElementById("ivInput").value;
+    if (ivInput.length > 0 && ivInput.length !== 32) { document.getElementById("results").innerHTML = "<strong>ERROR:</strong> The IV must be exactly 32 bytes long."; return false; }
+    const iv = ivInput
+        ? new Uint8Array(ivInput.split('').map(char => char.charCodeAt(0))) 
+        : crypto.getRandomValues(new Uint8Array(32));
+
+    // Parse or generate Nonce
+    const nonceInput = document.getElementById("nonceInput").value;
+    if (nonceInput.length > 0 && nonceInput.length !== 24) { document.getElementById("results").innerHTML = "<strong>ERROR:</strong> The nonce must be exactly 24 bytes long."; return false; }
+    const nonce = nonceInput
+        ? new Uint8Array(nonceInput.split('').map(char => char.charCodeAt(0))) 
+        : crypto.getRandomValues(new Uint8Array(24));
+
+    // Start time measurement
+    const startTime = performance.now();
+
+    // Encrypt plaintext with custom inputs
+    const encryptedData = Ceilidh20(plaintext, {
+        key: key,
+        iv: iv,
+        nonce: nonce,
+        stateVariant: (finalStateVariant || null),
+        isEncrypt: true
+    });
+
+    // Convert encrypted data to a readable string
+    const encryptedString = String.fromCharCode.apply(null, encryptedData);
+
+    // Decrypt ciphertext
+    const decryptedData = Ceilidh20(encryptedData, {
+        key: key,
+        iv: iv,
+        nonce: nonce,
+        stateVariant: finalStateVariant,
+        isEncrypt: false
+    });
+
+    // Convert decrypted data back to a string
+    const decryptedString = String.fromCharCode.apply(null, decryptedData);
+
+    // End time measurement
+    const endTime = performance.now();
+
+    // Check if decryption is successful
+    const isDecryptionSuccessful = plaintext === decryptedString;
+
+    // Output results
+    document.getElementById("results").innerHTML = `
+        <strong>Original Data:</strong> ${plaintext}<br>
+        <strong>Encrypted Data:</strong> ${encryptedString}<br>
+        <strong>Decrypted Data:</strong> ${decryptedString}<br>
+        <strong>Key (Base64):</strong> ${btoa(String.fromCharCode(...key))}<br>
+        <strong>IV (Base64):</strong> ${btoa(String.fromCharCode(...iv))}<br>
+        <strong>Nonce (Base64):</strong> ${btoa(String.fromCharCode(...nonce))}<br>
+        <strong>State Variant:</strong> ${finalStateVariant.join(', ')}<br>
+        <strong>Decryption Success:</strong> ${isDecryptionSuccessful ? "Yes" : "No"}<br>
+        <strong>Time Taken:</strong> ${(endTime - startTime).toFixed(2)} ms
+    `;
+}
+</script>
+
+</body>
+</html>
