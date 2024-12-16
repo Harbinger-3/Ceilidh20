@@ -59,7 +59,7 @@ cd Ceilidh20
 To use the cryptography in a browser, you can simply include the following script tag in your HTML:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
 ```
 
 ---
@@ -75,6 +75,7 @@ Ceilidh20(message, {
     key: key,
     iv: iv,
     nonce: nonce,
+    genIVLen: genIVLen,
     stateVariant: array,
     isEncrypt: boolean
 });
@@ -82,18 +83,19 @@ Ceilidh20(message, {
 
 ### Parameters:
 
-- **key**: 32-byte (256-bit) encryption key.
-- **iv**: 32-byte initialization vector.
-- **nonce**: 24-byte nonce, unique for each encryption.
-- **stateVariant**: an optional array of four integers to customize the cipher’s internal state
-- **isEncrypt**: Boolean flag, `true` for encryption, `false` for decryption.
+- **`key`**: 32-byte (256-bit) encryption key.
+- **`nonce`**: 24-byte (192-bit) nonce, unique for each encryption.
+- **`iv`**: Initialization vector, any length.
+- **`genIVLen`**: Length of a generated IV pair, will affect the length of ciphertext.
+- **`stateVariant`**: An optional array of four integers to customize the cipher’s internal state.
+- **`isEncrypt`**: Boolean flag, `true` for encryption, `false` for decryption.
 
 ---
 
 ## Encryption Usage
 
 To **encrypt** data using **Ceilidh20**, pass `isEncrypt: true`.
-To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, and **nonce** used during encryption.
+To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, **nonce**, and **genIVLen** used during encryption.
 
 ### Encryption & Decryption Sample:
 
@@ -101,10 +103,10 @@ To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, a
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ceilidh20 Encryption & Decryption</title>
-    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Ceilidh20 Encryption & Decryption</title>
+   <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
 </head>
 <body>
 
@@ -113,6 +115,10 @@ To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, a
 <!-- Input textarea for the user -->
 <h2>Enter Text to Encrypt:</h2>
 <textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Input for custom generate IV pair length -->
+<h2>Length of Generated IV Pair:</h2>
+<input type="number" id="ivPairLengthInput" placeholder="Leave blank for random IV pair length"><br><br>
 
 <!-- Button to trigger encryption and decryption -->
 <button onclick="processEncryptionDecryption()">Encrypt and Decrypt</button>
@@ -133,54 +139,64 @@ To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, a
 <script>
 // Function to handle encryption and decryption when the button is clicked
 function processEncryptionDecryption() {
-    // Retrieve the plaintext input from the textarea
-    const plaintext = document.getElementById("inputText").value;
+   // Retrieve the plaintext input from the textarea
+   const plaintext = document.getElementById("inputText").value;
 
-    // Generate random 32-byte key, 32-byte IV, and 24-byte nonce
-    const key = new Uint8Array(32);
-    const iv = new Uint8Array(32);
-    const nonce = new Uint8Array(24);
+   // Generate random 32-byte key, 32-byte IV, and 24-byte nonce
+   const key = new Uint8Array(32);
+   const iv = new Uint8Array(32);
+   const nonce = new Uint8Array(24);
 
-    crypto.getRandomValues(key);    // Fill the key with random bytes
-    crypto.getRandomValues(iv);     // Fill the IV with random bytes
-    crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
+   crypto.getRandomValues(key);    // Fill the key with random bytes
+   crypto.getRandomValues(iv);     // Fill the IV with random bytes
+   crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
 
-    // Display the original plaintext on the page
-    document.getElementById("originalData").textContent = plaintext;
+    // Parse or generate IV pair length value
+    const genIVLenInput = Number(document.getElementById("ivPairLengthInput").value);
+    const genIVLen = genIVLenInput
+        ? Math.floor(genIVLenInput) 
+        : 32;
 
-    // Encrypt the plaintext using Ceilidh20
-    const encryptedData = Ceilidh20(plaintext, {
-        key: key,         // 32-byte key
-        iv: iv,           // 32-byte initialization vector
-        nonce: nonce,     // 24-byte nonce
-        isEncrypt: true   // Encrypt the plaintext
-    });
+    document.getElementById("isSuccess").textContent = ` Length of Generated IV Pair: ${genIVLen}`;
 
-    // Convert the encrypted data to a readable string (if needed)
-    const encryptedString = String.fromCharCode.apply(null, encryptedData);
+   // Display the original plaintext on the page
+   document.getElementById("originalData").textContent = plaintext;
 
-    // Display the encrypted data on the page
-    document.getElementById("encryptedData").textContent = encryptedString;
+   // Encrypt the plaintext using Ceilidh20
+   const encryptedData = Ceilidh20(plaintext, {
+       key: key,            // 32-byte key
+       iv: iv,              // 32-byte initialization vector
+       nonce: nonce,        // 24-byte nonce
+       genIVLen: genIVLen,  // Length of Generated IV Pair
+       isEncrypt: true      // Encrypt the plaintext
+   });
 
-    // Decrypt the ciphertext using the same key, iv, and nonce
-    const decryptedData = Ceilidh20(encryptedData, {
-        key: key,         // Same 32-byte key used for encryption
-        iv: iv,           // Same 32-byte initialization vector used for encryption
-        nonce: nonce,     // Same 24-byte nonce used for encryption
-        isEncrypt: false  // Decrypt the ciphertext
-    });
+   // Convert the encrypted data to a readable string (if needed)
+   const encryptedString = String.fromCharCode.apply(null, encryptedData);
 
-    // Convert the decrypted data back to a string
-    const decryptedString = String.fromCharCode.apply(null, decryptedData);
+   // Display the encrypted data on the page
+   document.getElementById("encryptedData").textContent = encryptedString;
 
-    // Display the decrypted data on the page
-    document.getElementById("decryptedData").textContent = decryptedString;
+   // Decrypt the ciphertext using the same key, iv, and nonce
+   const decryptedData = Ceilidh20(encryptedData, {
+       key: key,            // Same 32-byte key used for encryption
+       iv: iv,              // Same 32-byte initialization vector used for encryption
+       nonce: nonce,        // Same 24-byte nonce used for encryption
+       genIVLen: genIVLen,  // Length of Generated IV Pair
+       isEncrypt: false     // Decrypt the ciphertext
+   });
 
-    // Check if decryption was successful by comparing decrypted data with the original plaintext
-    const decryptionSuccess = decryptedString === plaintext;
+   // Convert the decrypted data back to a string
+   const decryptedString = String.fromCharCode.apply(null, decryptedData);
 
-    // Display the result of the decryption check
-    document.getElementById("isSuccess").textContent = decryptionSuccess ? "Yes" : "No";
+   // Display the decrypted data on the page
+   document.getElementById("decryptedData").textContent = decryptedString;
+
+   // Check if decryption was successful by comparing decrypted data with the original plaintext
+   const decryptionSuccess = decryptedString === plaintext;
+
+   // Display the result of the decryption check
+   document.getElementById("isSuccess").textContent += " Decryption success: " + (decryptionSuccess ? "Yes" : "No");
 }
 </script>
 
@@ -203,7 +219,7 @@ You can modify the cryptographic state using the `stateVariant` parameter, which
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ceilidh20 Custom State Variant</title>
-    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
 </head>
 <body>
 
@@ -212,6 +228,10 @@ You can modify the cryptographic state using the `stateVariant` parameter, which
 <!-- Input textarea for the user -->
 <h2>Enter Text to Encrypt:</h2>
 <textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Input for custom generate IV pair length -->
+<h2>Length of Generated IV Pair:</h2>
+<input type="number" id="ivPairLengthInput" placeholder="Leave blank for random IV pair length"><br><br>
 
 <!-- Input for custom state array -->
 <h2>Enter State Variant (comma separated values, e.g., 7,9,13,18):</h2>
@@ -256,6 +276,14 @@ function processEncryptionDecryption() {
     const iv = new Uint8Array(32);
     const nonce = new Uint8Array(24);
 
+    // Parse or generate IV pair length value
+    const genIVLenInput = Number(document.getElementById("ivPairLengthInput").value);
+    const genIVLen = genIVLenInput
+        ? Math.floor(genIVLenInput) 
+        : 32;
+
+    document.getElementById("isSuccess").textContent += ` Length of Generated IV Pair: ${genIVLen}`;
+
     crypto.getRandomValues(key);    // Fill the key with random bytes
     crypto.getRandomValues(iv);     // Fill the IV with random bytes
     crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
@@ -265,6 +293,7 @@ function processEncryptionDecryption() {
         key: key,                      // 32-byte key
         iv: iv,                        // 32-byte initialization vector
         nonce: nonce,                  // 24-byte nonce
+        genIVLen: genIVLen,           // Length of Generated IV Pair
         stateVariant: finalStateVariant,    // Custom state variant
         isEncrypt: true                // Flag to indicate encryption mode
     });
@@ -278,8 +307,9 @@ function processEncryptionDecryption() {
     // Decrypt the ciphertext using the same key, iv, and nonce
     const decryptedDataWithState = Ceilidh20(encryptedDataWithState, {
         key: key,                      // Same 32-byte key
-        iv: iv,                        // Same 32-byte initialization vector
+        iv: iv,                        // Same initialization vector
         nonce: nonce,                  // Same 24-byte nonce
+        genIVLen: genIVLen,            // Length of Generated IV Pair
         stateVariant: finalStateVariant,    // Custom state variant
         isEncrypt: false               // Flag to indicate decryption mode
     });
@@ -310,55 +340,66 @@ function processEncryptionDecryption() {
 
 ---
 
-## Example: File Encryption with Node.js
-
-### Encryption Example:
+## Example: File Encryption & Decryption with Node.js
 
 ```javascript
 const fs = require('fs');
 const crypto = require('crypto');
-const { Mash, Alea, toBytes, uintArray, arraySlice, get32, rotl, Ceilidh20_main, Ceilidh20 } = require('./src/ceilidh20');
+const { Mash, Alea, Sha256, toBytes, toChars, uintArray, arraySlice, hexToBytes, get32, rotl, Ceilidh20_main, Ceilidh20 } = require('./src/ceilidh20');
 
+// Generate random key, IV, and nonce
 const key = crypto.randomBytes(32); // 32 bytes key
 const iv = crypto.randomBytes(32);  // 32 bytes IV
 const nonce = crypto.randomBytes(24); // 24 bytes nonce
+const genIVLen = 32;
 
+// Display the key, IV, and nonce
+console.log("Key:", key.toString('hex'));
+console.log("IV:", iv.toString('hex'));
+console.log("Nonce:", nonce.toString('hex'));
+
+// Read the file data
 const fileData = fs.readFileSync("sample.png");
+
+// Encrypt the data
+console.time("Encryption Time");
 const encryptedOutput = Ceilidh20(fileData, {
-    key: key,         // 32-byte key
-    iv: iv,           // 32-byte initialization vector
-    nonce: nonce,     // 24-byte nonce
-    isEncrypt: true   // Encrypt binary
+    key: key,           // 32-byte key
+    iv: iv,             // initialization vector
+    nonce: nonce,       // 24-byte nonce
+    genIVLen: genIVLen, // generated IV pair length
+    isEncrypt: true     // Encrypt binary
 });
+console.timeEnd("Encryption Time");
+
+// Write encrypted file
 fs.writeFileSync("sample.png.encrypted", encryptedOutput);
-```
 
-### Decryption Example:
+// Read encrypted file data
+const encryptedFileData = fs.readFileSync("sample.png.encrypted");
 
-```javascript
-const fs = require('fs');
-const crypto = require('crypto');
-const { Mash, Alea, toBytes, uintArray, arraySlice, get32, rotl, Ceilidh20_main, Ceilidh20 } = require('./src/ceilidh20');
-
-const key = Buffer.from([/* your 32-bytes key here */]);
-const iv = Buffer.from([/* your 32-bytes iv here */]);
-const nonce = Buffer.from([/* your 24-bytes nonce here */]);
-
-const fileData = fs.readFileSync("sample.png.encrypted");
-const decryptedOutput = Ceilidh20(fileData, {
-    key: key,         // 32-byte key
-    iv: iv,           // 32-byte initialization vector
-    nonce: nonce,     // 24-byte nonce
-    isEncrypt: false  // Decrypt binary
+// Decrypt the data
+console.time("Decryption Time");
+const decryptedOutput = Ceilidh20(encryptedFileData, {
+    key: key,           // 32-byte key
+    iv: iv,             // initialization vector
+    nonce: nonce,       // 24-byte nonce
+    genIVLen: genIVLen, // generated IV pair length
+    isEncrypt: false    // Decrypt binary
 });
-fs.writeFileSync("sample.png", decryptedOutput);
+console.timeEnd("Decryption Time");
+
+// Write decrypted file
+fs.writeFileSync("sample.png.decrypted", decryptedOutput);
 ```
 
 ## Important Notes
 
 - **Key Length**: Ensure the key is always 32 bytes for correct encryption/decryption.
 
-- **IV and Nonce Sizes**: The IV should be 32 bytes, and the nonce should be 24 bytes.
+- **IV and Nonce Sizes**: The IV should be defined, and the nonce should be 24 bytes.
+
+- **Generated IV Length**: The value of generated IV pair length must be the same for correct encryption/decryption.
 
 - **State Variants**: The algorithm's behavior may change depending on the stateVariant; it is not recommended to use it.
 
@@ -374,7 +415,7 @@ This parameter allows you to modify the internal cryptographic state. It can be 
 
 This cryptographic system is **custom-implemented** and has not been widely reviewed by the cryptographic community. It was initially developed <b>out of boredom</u>, and became an open-source project. <h3>Do not use this cipher for sensitive data or in production environments!</h3>
 
-The design was based on **ChaCha20** and/or **Salsa20** and it was modified to address some of the challenges associated with stream ciphers, such as <u>deterministic outputs</u> which can have vulnerabilities like predictability and susceptibility to known-plaintext attacks, where an attacker can exploit the repetitive nature of the cipher to recover the secret key or plaintext.
+The design was based on **ChaCha20** and/or **Salsa20** and it was modified to make it more secure by addressing some of the challenges associated with stream ciphers, such as <u>deterministic outputs</u> which can have vulnerabilities like predictability and susceptibility to known-plaintext attacks, where an attacker can exploit the repetitive nature of the cipher to recover the secret key or plaintext.
 
 Key differences include a **larger nonce**, the addition of an **IV** for **randomization**, and **non-deterministic ciphertext** output. It is uncertain whether this is a completely new cipher or simply a <u>variant</u> derived from existing stream cipher families.
 
