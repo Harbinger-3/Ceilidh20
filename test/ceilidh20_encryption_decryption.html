@@ -4,7 +4,7 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Ceilidh20 Encryption & Decryption</title>
-   <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
 </head>
 <body>
 
@@ -13,6 +13,10 @@
 <!-- Input textarea for the user -->
 <h2>Enter Text to Encrypt:</h2>
 <textarea id="inputText" rows="4" cols="50"></textarea><br><br>
+
+<!-- Input for custom generate IV pair length -->
+<h2>Length of Generated IV Pair:</h2>
+<input type="number" id="ivPairLengthInput" placeholder="Leave blank for random IV pair length"><br><br>
 
 <!-- Button to trigger encryption and decryption -->
 <button onclick="processEncryptionDecryption()">Encrypt and Decrypt</button>
@@ -45,15 +49,24 @@ function processEncryptionDecryption() {
    crypto.getRandomValues(iv);     // Fill the IV with random bytes
    crypto.getRandomValues(nonce);  // Fill the nonce with random bytes
 
+    // Parse or generate IV pair length value
+    const genIVLenInput = Number(document.getElementById("ivPairLengthInput").value);
+    const genIVLen = genIVLenInput
+        ? Math.floor(genIVLenInput) 
+        : 32;
+
+    document.getElementById("isSuccess").textContent = ` Length of Generated IV Pair: ${genIVLen}`;
+
    // Display the original plaintext on the page
    document.getElementById("originalData").textContent = plaintext;
 
    // Encrypt the plaintext using Ceilidh20
    const encryptedData = Ceilidh20(plaintext, {
-       key: key,         // 32-byte key
-       iv: iv,           // 32-byte initialization vector
-       nonce: nonce,     // 24-byte nonce
-       isEncrypt: true   // Encrypt the plaintext
+       key: key,            // 32-byte key
+       iv: iv,              // 32-byte initialization vector
+       nonce: nonce,        // 24-byte nonce
+       genIVLen: genIVLen,  // Length of Generated IV Pair
+       isEncrypt: true      // Encrypt the plaintext
    });
 
    // Convert the encrypted data to a readable string (if needed)
@@ -64,10 +77,11 @@ function processEncryptionDecryption() {
 
    // Decrypt the ciphertext using the same key, iv, and nonce
    const decryptedData = Ceilidh20(encryptedData, {
-       key: key,         // Same 32-byte key used for encryption
-       iv: iv,           // Same 32-byte initialization vector used for encryption
-       nonce: nonce,     // Same 24-byte nonce used for encryption
-       isEncrypt: false  // Decrypt the ciphertext
+       key: key,            // Same 32-byte key used for encryption
+       iv: iv,              // Same 32-byte initialization vector used for encryption
+       nonce: nonce,        // Same 24-byte nonce used for encryption
+       genIVLen: genIVLen,  // Length of Generated IV Pair
+       isEncrypt: false     // Decrypt the ciphertext
    });
 
    // Convert the decrypted data back to a string
@@ -80,7 +94,7 @@ function processEncryptionDecryption() {
    const decryptionSuccess = decryptedString === plaintext;
 
    // Display the result of the decryption check
-   document.getElementById("isSuccess").textContent = decryptionSuccess ? "Yes" : "No";
+   document.getElementById("isSuccess").textContent += " Decryption success: " + (decryptionSuccess ? "Yes" : "No");
 }
 </script>
 
