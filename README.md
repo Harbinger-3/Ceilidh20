@@ -70,9 +70,9 @@ The `genIVLen` value can be set to any positive integer. The length of the gener
 
 ---
 
-## What is a `stateVariant`?
+### What is `stateVariant`?
 
-The `stateVariant` is an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process, making it flexible but **it is not recommended to use** as it may potentially weaken its security.
+The `stateVariant` is an optional parameter that can adjust the internal cryptographic state of the cipher. While it can provide flexibility in some cryptographic setups, using it incorrectly might compromise the cipher’s security. **It’s best to avoid using this parameter unless you fully understand how it affects the system**.
 
 ---
 
@@ -111,6 +111,8 @@ To use the cryptography in a browser, you can simply include the following scrip
 ```html
 <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
 ```
+
+*Note: It looks like `ceilidh20.min.js` didn’t update properly from [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js). Please use the script tag provided above instead.*
 
 ---
 
