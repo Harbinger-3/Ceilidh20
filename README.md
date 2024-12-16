@@ -429,7 +429,7 @@ This cryptographic system is **custom-implemented** and has not been widely revi
 
 The design was based on **ChaCha20** and/or **Salsa20** and it was modified to make it more secure by addressing some of the challenges associated with stream ciphers, such as <u>deterministic outputs</u> which can have vulnerabilities like predictability and susceptibility to known-plaintext attacks, where an attacker can exploit the repetitive nature of the cipher to recover the secret key or plaintext.
 
-Key differences include a **larger nonce**, the addition of an **IV** for **randomization**, and **non-deterministic ciphertext** output. It is uncertain whether this is a completely new cipher or simply a <u>variant</u> derived from existing stream cipher families.
+Key differences include a **larger nonce**, the addition of an **IV** as well as **hashing IV pair** for **randomization**, and **non-deterministic ciphertext** output. It is uncertain whether this is a completely new cipher or simply a <u>variant</u> derived from existing stream cipher families.
 
 # Open-source
 
