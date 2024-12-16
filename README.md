@@ -34,7 +34,7 @@ The `genIVLen` value can be set to any positive integer. The length of the gener
 
 ## What is a `stateVariant`?
 
-The `stateVariant` is an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process, making it flexible but **it is not recommended to use**.
+The `stateVariant` is an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process, making it flexible but **it is not recommended to use** as it may potentially weaken its security.
 
 ---
 
@@ -98,7 +98,7 @@ Ceilidh20(message, {
 - **`key`**: 32-byte (256-bit) encryption key.
 - **`nonce`**: 24-byte (192-bit) nonce, unique for each encryption.
 - **`iv`**: Initialization vector, any length.
-- **`genIVLen`**: Length of a generated IV pair, will affect the length of ciphertext.
+- **`genIVLen`**: Length (number) of a generated IV pair, will affect the length of ciphertext.
 - **`stateVariant`**: An optional array of four integers to customize the cipher’s internal state.
 - **`isEncrypt`**: Boolean flag, `true` for encryption, `false` for decryption.
 
@@ -347,7 +347,7 @@ function processEncryptionDecryption() {
 ## Notes:
 
 - **Randomized Output**: Due to the nonce and IV, the ciphertext will differ each time, even with identical plaintext inputs.
-- **Security Warning**: Ensure the key, IV, and nonce are kept secure and unique for each encryption.
+- **Security Warning**: Ensure the key, IV, nonce, and generated IV length are kept secure and unique for each encryption. Without it, decryption wouldn't be possible.
 - **`stateVariant`**: Should be used carefully. The default `[7, 12, 8, 16]` is suitable for most use cases.
 
 ---
@@ -425,11 +425,13 @@ This parameter allows you to modify the internal cryptographic state. It can be 
 
 # WARNING ⚠️
 
-This cryptographic system is **custom-implemented** and has not been widely reviewed by the cryptographic community. It was initially developed <b>out of boredom</u>, and became an open-source project. <h3>Do not use this cipher for sensitive data or in production environments!</h3>
+This cryptographic system is **"custom-implemented** and has not been widely reviewed by the cryptographic community. It was initially developed out of boredom and later became an open-source project.
 
-The design was based on **ChaCha20** and/or **Salsa20** and it was modified to make it more secure by addressing some of the challenges associated with stream ciphers, such as <u>deterministic outputs</u> which can have vulnerabilities like predictability and susceptibility to known-plaintext attacks, where an attacker can exploit the repetitive nature of the cipher to recover the secret key or plaintext.
+<h3>Do not use this cipher for sensitive data or in production environments!</h3>
 
-Key differences include a **larger nonce**, the addition of an **IV** as well as **hashing IV pair** for **randomization**, and **non-deterministic ciphertext** output. It is uncertain whether this is a completely new cipher or simply a <u>variant</u> derived from existing stream cipher families.
+While inspired by **ChaCha20** and/or **Salsa20**, the system was modified to address certain weaknesses in stream ciphers, such as *deterministic outputs* that could be vulnerable to attacks like known-plaintext attacks. The modifications include a **larger nonce**, the introduction of an **IV**, and **hashing the IV pair** for added **randomization**, ensuring non-deterministic ciphertext output and, possibly, more security.
+
+It is unclear whether this is a completely new cipher or merely a variant derived from existing stream cipher families.
 
 # Open-source
 
