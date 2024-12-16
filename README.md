@@ -27,7 +27,7 @@ This implementation enhances traditional stream cipher designs, introducing a la
 Generate a new initialization vector (IV) by hashing the user-provided IV and a randomly generated IV:
 
 ```
-newIV = Sha256.Hash(userIV + generatedIV)
+newIV = Sha256.Hash(generatedIV + userIV)
 ```
 
 ### 2. Encryption:
@@ -38,7 +38,7 @@ newIV = Sha256.Hash(userIV + generatedIV)
 - Concatenate both ciphertexts to form the final ciphertext:
 
 ```
-newIV = Sha256.Hash(userIV + generatedIV)
+newIV = Sha256.Hash(generatedIV + userIV)
 c1 = encrypt(plaintext, key, nonce, newIV)
 c2 = encrypt(generatedIV, key, nonce)
 ciphertext = concat([c1, c2])
@@ -52,7 +52,7 @@ ciphertext = concat([c1, c2])
 
 ```
 generatedIV = decrypt(c2, key, nonce)
-newIV = Sha256.Hash(userIV + generatedIV)
+newIV = Sha256.Hash(generatedIV + userIV)
 plaintext = decrypt(c1, key, nonce, newIV)
 ```
 
