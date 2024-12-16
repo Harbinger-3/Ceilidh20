@@ -20,6 +20,44 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 ---
 
+## How Ceilidh20 Cryptography Works?
+
+### 1. Hash Pairing:
+
+Generate a new initialization vector (IV) by hashing the user-provided IV and a randomly generated IV:
+
+```
+newIV = Sha256.Hash(userIV + generatedIV)
+```
+
+### 2. Encryption:
+
+- Hash the combination of the user-provided IV and the generated IV to produce `newIV`.
+- Encrypt the plaintext using the key, nonce, and the newly generated IV (`newIV`).
+- Encrypt the generated IV with the same key and nonce for use in decryption.
+- Concatenate both ciphertexts to form the final ciphertext:
+
+```
+newIV = Sha256.Hash(userIV + generatedIV)
+c1 = encrypt(plaintext, key, nonce, newIV)
+c2 = encrypt(generatedIV, key, nonce)
+ciphertext = concat([c1, c2])
+```
+
+### 3. Decryption:
+
+- Decrypt the second part of the ciphertext (`c2`) to retrieve the generated IV.
+- Hash the user-provided IV combined with the decrypted generated IV to derive `newIV`.
+- Decrypt the first part of the ciphertext (`c1`) using the derived `newIV` to recover the plaintext:
+
+```
+generatedIV = decrypt(c2, key, nonce)
+newIV = Sha256.Hash(userIV + generatedIV)
+plaintext = decrypt(c1, key, nonce, newIV)
+```
+
+---
+
 ## What is `genIVLen`?
 
 The `genIVLen` parameter controls the length of a generated IV pair, which is used to further randomize the encryption process. When you provide an IV for encryption, this value dictates the length of the IV that will be generated. This generated IV is then combined with the user's provided IV by hashing both via SHA-256 to form a new IV. This newly hashed IV is then used to XOR with the ciphertext, adding an extra layer of randomization and ensuring that even identical plaintext inputs will produce different ciphertext outputs.
