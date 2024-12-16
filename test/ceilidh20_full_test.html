@@ -15,16 +15,20 @@
 <textarea id="inputText" rows="4" cols="50"></textarea><br><br>
 
 <!-- Input for custom key -->
-<h2>Enter Key (Base64, 32 bytes):</h2>
+<h2>Enter Key (32 bytes):</h2>
 <input type="text" id="keyInput" placeholder="Leave blank for random key"><br><br>
 
+<!-- Input for custom nonce -->
+<h2>Enter Nonce (24 bytes):</h2>
+<input type="text" id="nonceInput" placeholder="Leave blank for random nonce"><br><br>
+
 <!-- Input for custom IV -->
-<h2>Enter IV (Base64, 32 bytes):</h2>
+<h2>Enter IV:</h2>
 <input type="text" id="ivInput" placeholder="Leave blank for random IV"><br><br>
 
-<!-- Input for custom nonce -->
-<h2>Enter Nonce (Base64, 24 bytes):</h2>
-<input type="text" id="nonceInput" placeholder="Leave blank for random nonce"><br><br>
+<!-- Input for custom generate IV pair length -->
+<h2>Length of Generated IV Pair:</h2>
+<input type="number" id="ivPairLengthInput" placeholder="Leave blank for random IV pair length"><br><br>
 
 <!-- Input for custom state variant -->
 <h2>Enter State Variant (comma separated values, e.g., 7,9,13,18):</h2>
@@ -57,9 +61,9 @@ function processFullTest() {
 
     // Parse or generate IV
     const ivInput = document.getElementById("ivInput").value;
-    if (ivInput.length > 0 && ivInput.length !== 32) { document.getElementById("results").innerHTML = "<strong>ERROR:</strong> The IV must be exactly 32 bytes long."; return false; }
-    const iv = ivInput
-        ? new Uint8Array(ivInput.split('').map(char => char.charCodeAt(0))) 
+    if (ivInput.length > 0 && ivInput.length < 1) { document.getElementById("results").innerHTML = "<strong>ERROR:</strong> The IV must be defined."; return false; }
+    const iv = ivInput 
+        ? ivInput 
         : crypto.getRandomValues(new Uint8Array(32));
 
     // Parse or generate Nonce
@@ -69,6 +73,12 @@ function processFullTest() {
         ? new Uint8Array(nonceInput.split('').map(char => char.charCodeAt(0))) 
         : crypto.getRandomValues(new Uint8Array(24));
 
+    // Parse or generate IV pair length value
+    const genIVLenInput = Number(document.getElementById("ivPairLengthInput").value);
+    const genIVLen = genIVLenInput
+        ? Math.floor(genIVLenInput) 
+        : 32;
+
     // Start time measurement
     const startTime = performance.now();
 
@@ -77,6 +87,7 @@ function processFullTest() {
         key: key,
         iv: iv,
         nonce: nonce,
+        genIVLen: genIVLen,
         stateVariant: (finalStateVariant || null),
         isEncrypt: true
     });
@@ -89,6 +100,7 @@ function processFullTest() {
         key: key,
         iv: iv,
         nonce: nonce,
+        genIVLen: genIVLen,
         stateVariant: finalStateVariant,
         isEncrypt: false
     });
@@ -110,6 +122,7 @@ function processFullTest() {
         <strong>Key (Base64):</strong> ${btoa(String.fromCharCode(...key))}<br>
         <strong>IV (Base64):</strong> ${btoa(String.fromCharCode(...iv))}<br>
         <strong>Nonce (Base64):</strong> ${btoa(String.fromCharCode(...nonce))}<br>
+        <strong>Length of Generated IV Pair:</strong> ${genIVLen}<br>
         <strong>State Variant:</strong> ${finalStateVariant.join(', ')}<br>
         <strong>Decryption Success:</strong> ${isDecryptionSuccessful ? "Yes" : "No"}<br>
         <strong>Time Taken:</strong> ${(endTime - startTime).toFixed(2)} ms
