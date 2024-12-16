@@ -20,6 +20,18 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 ---
 
+## What is `genIVLen`?
+
+The `genIVLen` parameter controls the length of a generated IV pair, which is used to further randomize the encryption process. When you provide an IV for encryption, this value dictates the length of the IV that will be generated. This generated IV is then combined with the user's provided IV by hashing both via SHA-256 to form a new IV. This newly generated IV is used to XOR with the ciphertext, adding an extra layer of randomization and ensuring that even identical plaintext inputs will produce different ciphertext outputs.
+
+The `genIVLen` value can be set to any positive integer. The length of the generated IV pair impacts the final length of the ciphertext. If the `genIVLen` is set to a larger value, the output ciphertext will be correspondingly larger, adding flexibility in controlling the output size.
+
+- The `genIVLen` value influences the length of the generated IV, which is crucial in determining the final ciphertext length.
+- Larger `genIVLen` values create longer ciphertexts, contributing to higher randomness.
+- The user-provided IV and the generated IV are hashed using SHA-256 to create a new IV, which is then XORed with the ciphertext, ensuring non-deterministic encryption results.
+
+---
+
 ## What is a `stateVariant`?
 
 The `stateVariant` is an optional parameter that allows you to modify the internal cryptographic state of the cipher. It is an array of four integers that adjusts certain internal operations of the algorithm, potentially altering its behavior and the resulting encryption/decryption process, making it flexible but **it is not recommended to use**.
