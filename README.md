@@ -72,7 +72,7 @@ The `genIVLen` value can be set to any positive integer. The length of the gener
 
 ### What is `stateVariant`?
 
-The `stateVariant` is an optional parameter that can adjust the internal cryptographic state of the cipher. While it can provide flexibility in some cryptographic setups, using it incorrectly might compromise the cipher’s security. **It’s best to avoid using this parameter unless you fully understand how it affects the system**.
+The `stateVariant` is an optional parameter that can adjust the internal cryptographic state of the cipher. While it can provide flexibility, using it incorrectly might compromise the cipher’s security. **It’s best to avoid using this parameter unless you fully understand how it affects the system**.
 
 ---
 
