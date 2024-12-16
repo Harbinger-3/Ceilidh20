@@ -22,7 +22,7 @@ This implementation enhances traditional stream cipher designs, introducing a la
 
 ## What is `genIVLen`?
 
-The `genIVLen` parameter controls the length of a generated IV pair, which is used to further randomize the encryption process. When you provide an IV for encryption, this value dictates the length of the IV that will be generated. This generated IV is then combined with the user's provided IV by hashing both via SHA-256 to form a new IV. This newly generated IV is used to XOR with the ciphertext, adding an extra layer of randomization and ensuring that even identical plaintext inputs will produce different ciphertext outputs.
+The `genIVLen` parameter controls the length of a generated IV pair, which is used to further randomize the encryption process. When you provide an IV for encryption, this value dictates the length of the IV that will be generated. This generated IV is then combined with the user's provided IV by hashing both via SHA-256 to form a new IV. This newly hashed IV is then used to XOR with the ciphertext, adding an extra layer of randomization and ensuring that even identical plaintext inputs will produce different ciphertext outputs.
 
 The `genIVLen` value can be set to any positive integer. The length of the generated IV pair impacts the final length of the ciphertext. If the `genIVLen` is set to a larger value, the output ciphertext will be correspondingly larger, adding flexibility in controlling the output size.
 
