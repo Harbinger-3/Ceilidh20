@@ -2,28 +2,28 @@
 function Mash() {
     var t = 4022871197;
     return {
-        hashFunction: function (e) {
-            var $ = null,
+        hashFunction: function ($) {
+            var e = null,
                 r = 0;
-            do (t += e.charCodeAt(r++)), (t = ($ = 0.02519603282416938 * t) >>> 0), ($ -= t), ($ *= t), (t = $ >>> 0), ($ -= t), (t += 4294967296 * $);
-            while (r < e.length);
+            do (t += $.charCodeAt(r++)), (t = (e = 0.02519603282416938 * t) >>> 0), (e -= t), (e *= t), (t = e >>> 0), (e -= t), (t += 4294967296 * e);
+            while (r < $.length);
             return (t >>> 0) * 23283064365386963e-26;
         },
     };
 }
 function Alea(t) {
-    var e = new Date(),
-        $ = Mash(),
+    var $ = new Date(),
+        e = Mash(),
         r = t || 1,
         _ = 1,
-        n = $.hashFunction(" "),
-        o = $.hashFunction(" "),
-        i = $.hashFunction(" ");
+        n = e.hashFunction(" "),
+        o = e.hashFunction(" "),
+        i = e.hashFunction(" ");
     return (
-        (n -= $.hashFunction(e.getTime() + r + "")) < 0 && n++,
-        (o -= $.hashFunction(e.getTime() + r + "")) < 0 && o++,
-        (i -= $.hashFunction(e.getTime() + r + "")) < 0 && i++,
-        ($ = null),
+        (n -= e.hashFunction($.getTime() + r + "")) < 0 && n++,
+        (o -= e.hashFunction($.getTime() + r + "")) < 0 && o++,
+        (i -= e.hashFunction($.getTime() + r + "")) < 0 && i++,
+        (e = null),
         {
             random: function () {
                 var t = 2091639 * n + 23283064365386963e-26 * _;
@@ -33,11 +33,11 @@ function Alea(t) {
     );
 }
 var Sha256 = {
-    majority: function (t, e, $) {
-        return (t & e) ^ (t & $) ^ (e & $);
+    majority: function (t, $, e) {
+        return (t & $) ^ (t & e) ^ ($ & e);
     },
-    ROTR: function (t, e) {
-        return (e >>> t) | (e << (32 - t));
+    ROTR: function (t, $) {
+        return ($ >>> t) | ($ << (32 - t));
     },
     sigma0: function (t) {
         return this.ROTR(2, t) ^ this.ROTR(13, t) ^ this.ROTR(22, t);
@@ -51,29 +51,29 @@ var Sha256 = {
     choice1: function (t) {
         return this.ROTR(17, t) ^ this.ROTR(19, t) ^ (t >>> 10);
     },
-    choice: function (t, e, $) {
-        return (t & e) ^ (~t & $);
+    choice: function (t, $, e) {
+        return (t & $) ^ (~t & e);
     },
     toHexStr: function (t) {
-        for (var e = "", $ = 7; $ >= 0; $--) e += ((t >>> (4 * $)) & 15).toString(16);
-        return e;
+        for (var $ = "", e = 7; e >= 0; e--) $ += ((t >>> (4 * e)) & 15).toString(16);
+        return $;
     },
     utf8Encode: function (t) {
-        for (var e = "", $ = 0; $ < t.length; $++) {
-            var r = t.charCodeAt($);
+        for (var $ = "", e = 0; e < t.length; e++) {
+            var r = t.charCodeAt(e);
             r < 128
-                ? (e += String.fromCharCode(r))
+                ? ($ += String.fromCharCode(r))
                 : r < 2048
-                ? ((e += String.fromCharCode((r >> 6) | 192)), (e += String.fromCharCode((63 & r) | 128)))
-                : ((e += String.fromCharCode((r >> 12) | 224)), (e += String.fromCharCode(((r >> 6) & 63) | 128)), (e += String.fromCharCode((63 & r) | 128)));
+                ? (($ += String.fromCharCode((r >> 6) | 192)), ($ += String.fromCharCode((63 & r) | 128)))
+                : (($ += String.fromCharCode((r >> 12) | 224)), ($ += String.fromCharCode(((r >> 6) & 63) | 128)), ($ += String.fromCharCode((63 & r) | 128)));
         }
-        return e;
+        return $;
     },
     hash: function (t) {
         try {
-            var e = crypto.createHash("sha256");
-            return e.update(t), e.digest("hex");
-        } catch ($) {
+            var $ = crypto.createHash("sha256");
+            return $.update(t), $.digest("hex");
+        } catch (e) {
             t = this.utf8Encode(t);
         }
         for (
@@ -157,13 +157,13 @@ var Sha256 = {
         for (var h = [], i = 0; i < n; i++) {
             for (var l = 0; l < 16; l++) h[l] = o[i][l];
             for (var l = 16; l < 64; l++) h[l] = (this.sigma1(h[l - 2]) + h[l - 7] + this.sigma0(h[l - 15]) + h[l - 16]) & 4294967295;
-            for (var u = _[0], f = _[1], s = _[2], c = _[3], g = _[4], d = _[5], y = _[6], m = _[7], l = 0; l < 64; l++) {
+            for (var f = _[0], u = _[1], s = _[2], c = _[3], g = _[4], d = _[5], y = _[6], m = _[7], l = 0; l < 64; l++) {
                 var v = m + this.sigma1(g) + this.choice(g, d, y) + r[l] + h[l],
-                    C = this.sigma0(u) + this.majority(u, f, s);
-                (m = y), (y = d), (d = g), (c = s), (s = f), (f = u), (g = (c + v) & 4294967295), (u = (v + C) & 4294967295);
+                    C = this.sigma0(f) + this.majority(f, u, s);
+                (m = y), (y = d), (d = g), (c = s), (s = u), (u = f), (g = (c + v) & 4294967295), (f = (v + C) & 4294967295);
             }
-            (_[0] = (_[0] + u) & 4294967295),
-                (_[1] = (_[1] + f) & 4294967295),
+            (_[0] = (_[0] + f) & 4294967295),
+                (_[1] = (_[1] + u) & 4294967295),
                 (_[2] = (_[2] + s) & 4294967295),
                 (_[3] = (_[3] + c) & 4294967295),
                 (_[4] = (_[4] + g) & 4294967295),
@@ -176,139 +176,140 @@ var Sha256 = {
 };
 function toBytes(t) {
     if ("undefined" != typeof Buffer) return Buffer.isBuffer(t) ? t : Buffer.from(t);
-    for (var e = [], $ = 0; $ < t.length; $++) {
-        if ("number" == typeof t[$]) return t;
-        e[$] = t.charCodeAt($);
+    for (var $ = [], e = 0; e < t.length; e++) {
+        if ("number" == typeof t[e]) return t;
+        $[e] = t.charCodeAt(e);
     }
-    return e;
+    return $;
 }
-function uintArray(t, e) {
-    var $ = [],
+function uintArray(t, $) {
+    var e = [],
         r = null,
         _ = 0;
-    if (e)
+    if ($)
         try {
             if ("undefined" != typeof window && void 0 !== window.crypto) return (r = new Uint8Array(t)), window.crypto.getRandomValues(r), r;
             return crypto.randomBytes(t);
         } catch (n) {
-            for (; _ < t; _++) (r = Alea(_ + 1)), ($[_] = Math.floor(256 * r.random()));
+            for (; _ < t; _++) (r = Alea(_ + 1)), (e[_] = Math.floor(256 * r.random()));
         }
-    else for (; _ < t; _++) $[_] = 0;
-    return $;
+    else for (; _ < t; _++) e[_] = 0;
+    return e;
 }
-function arraySlice(t, e, $) {
-    (e = void 0 === e ? 0 : e < 0 ? t.length + e : e), ($ = void 0 === $ ? t.length : $ < 0 ? t.length + $ : $);
+function arraySlice(t, $, e) {
+    ($ = void 0 === $ ? 0 : $ < 0 ? t.length + $ : $), (e = void 0 === e ? t.length : e < 0 ? t.length + e : e);
     try {
-        return t.slice(e, $);
+        return t.slice($, e);
     } catch (r) {
-        for (var _ = [], n = e; n < $ && n < t.length && n >= 0; n++) _.push(t[n]);
+        for (var _ = [], n = $; n < e && n < t.length && n >= 0; n++) _.push(t[n]);
         return _;
     }
 }
 function hexToBytes(t) {
-    for (var e = [], $ = 0; $ < t.length; $ += 2) e.push(parseInt(t.substr($, 2), 16));
-    return e;
+    for (var $ = [], e = 0; e < t.length; e += 2) $.push(parseInt(t.substr(e, 2), 16));
+    return $;
 }
 function toChars(t) {
     if ("string" == typeof t) return t;
-    for (var e = "", $ = 0; $ < t.length; $++) e += String.fromCharCode(t[$]);
-    return e;
+    for (var $ = "", e = 0; e < t.length; e++) $ += String.fromCharCode(t[e]);
+    return $;
 }
-function get32(t, e) {
-    return t[e++] ^ (t[e++] << 8) ^ (t[e++] << 16) ^ (t[e] << 24);
+function get32(t, $) {
+    return t[$++] ^ (t[$++] << 8) ^ (t[$++] << 16) ^ (t[$] << 24);
 }
-function rotl(t, e) {
-    return (t << e) | (t >>> (32 - e));
+function rotl(t, $) {
+    return (t << $) | (t >>> (32 - $));
 }
-function Ceilidh20_main(t, e, $, r, _, n) {
+function Ceilidh20_main(t, $, e, r, _, n) {
     var o = [1634760805, 857760878, 0, 0, 0, 0, 2036477234, 0, 0, 0, 0, 1797285236, 0, 0, 0, 0, 0, 0],
         i = [],
         a = [],
         h = 0,
         l = 0,
-        u = 0;
+        f = 0;
     if (t) {
-        var f = Buffer.alloc(64);
+        var u = Buffer.alloc(64);
         i = Buffer.alloc(r.length);
-    } else var f = uintArray(64, !1);
-    (o[2] = get32($.key, 0)),
-        (o[3] = get32($.key, 4)),
-        (o[4] = get32($.key, 8)),
-        (o[5] = get32($.key, 12)),
-        (o[6] = get32($.nonce, 0)),
-        (o[7] = get32($.nonce, 4)),
-        (o[8] = get32($.nonce, 8)),
-        (o[9] = get32($.key, 16)),
-        (o[10] = get32($.key, 20)),
-        (o[11] = get32($.key, 24)),
-        (o[12] = get32($.key, 28)),
-        (o[13] = get32($.nonce, 12)),
-        (o[14] = get32($.nonce, 16)),
-        (o[15] = get32($.nonce, 20)),
-        (o[16] = get32($.nonce, 24));
+    } else var u = uintArray(64, !1);
+    (o[2] = get32(e.key, 0)),
+        (o[3] = get32(e.key, 4)),
+        (o[4] = get32(e.key, 8)),
+        (o[5] = get32(e.key, 12)),
+        (o[6] = get32(e.nonce, 0)),
+        (o[7] = get32(e.nonce, 4)),
+        (o[8] = get32(e.nonce, 8)),
+        (o[9] = get32(e.key, 16)),
+        (o[10] = get32(e.key, 20)),
+        (o[11] = get32(e.key, 24)),
+        (o[12] = get32(e.key, 28)),
+        (o[13] = get32(e.nonce, 12)),
+        (o[14] = get32(e.nonce, 16)),
+        (o[15] = get32(e.nonce, 20)),
+        (o[16] = get32(e.nonce, 24));
     for (var s = 0; s < r.length; s++) {
         if (0 == l || 64 == l) {
             for (h = 0, a = a.concat(o); h < 20; h += 2)
-                (a[4] = (a[4] ^ rotl(a[0] + a[12], e[0])) >>> 0),
-                    (a[8] = (a[8] ^ rotl(a[4] + a[0], e[1])) >>> 0),
-                    (a[12] = (a[12] ^ rotl(a[8] + a[4], e[2])) >>> 0),
-                    (a[0] = (a[0] ^ rotl(a[12] + a[8], e[3])) >>> 0),
-                    (a[9] = (a[9] ^ rotl(a[5] + a[1], e[0])) >>> 0),
-                    (a[13] = (a[13] ^ rotl(a[9] + a[5], e[1])) >>> 0),
-                    (a[1] = (a[1] ^ rotl(a[13] + a[9], e[2])) >>> 0),
-                    (a[5] = (a[5] ^ rotl(a[1] + a[13], e[3])) >>> 0),
-                    (a[14] = (a[14] ^ rotl(a[10] + a[6], e[0])) >>> 0),
-                    (a[2] = (a[2] ^ rotl(a[14] + a[10], e[1])) >>> 0),
-                    (a[6] = (a[6] ^ rotl(a[2] + a[14], e[2])) >>> 0),
-                    (a[10] = (a[10] ^ rotl(a[6] + a[2], e[3])) >>> 0),
-                    (a[3] = (a[3] ^ rotl(a[15] + a[11], e[0])) >>> 0),
-                    (a[7] = (a[7] ^ rotl(a[3] + a[15], e[1])) >>> 0),
-                    (a[11] = (a[11] ^ rotl(a[7] + a[3], e[2])) >>> 0),
-                    (a[15] = (a[15] ^ rotl(a[11] + a[7], e[3])) >>> 0),
-                    (a[1] = (a[1] ^ rotl(a[0] + a[3], e[0])) >>> 0),
-                    (a[2] = (a[2] ^ rotl(a[1] + a[0], e[1])) >>> 0),
-                    (a[3] = (a[3] ^ rotl(a[2] + a[1], e[2])) >>> 0),
-                    (a[0] = (a[0] ^ rotl(a[3] + a[2], e[3])) >>> 0),
-                    (a[6] = (a[6] ^ rotl(a[5] + a[4], e[0])) >>> 0),
-                    (a[7] = (a[7] ^ rotl(a[6] + a[5], e[1])) >>> 0),
-                    (a[4] = (a[4] ^ rotl(a[7] + a[6], e[2])) >>> 0),
-                    (a[5] = (a[5] ^ rotl(a[4] + a[7], e[3])) >>> 0),
-                    (a[11] = (a[11] ^ rotl(a[10] + a[9], e[0])) >>> 0),
-                    (a[8] = (a[8] ^ rotl(a[11] + a[10], e[1])) >>> 0),
-                    (a[9] = (a[9] ^ rotl(a[8] + a[11], e[2])) >>> 0),
-                    (a[10] = (a[10] ^ rotl(a[9] + a[8], e[3])) >>> 0),
-                    (a[12] = (a[12] ^ rotl(a[15] + a[14], e[0])) >>> 0),
-                    (a[13] = (a[13] ^ rotl(a[12] + a[15], e[1])) >>> 0),
-                    (a[14] = (a[14] ^ rotl(a[13] + a[12], e[2])) >>> 0),
-                    (a[15] = (a[15] ^ rotl(a[14] + a[13], e[3])) >>> 0);
-            for (h = 0; h < 16; h++) (a[h] = a[h] + o[h]), (f[u++] = 255 & a[h]), (f[u++] = (a[h] >>> 8) & 255), (f[u++] = (a[h] >>> 16) & 255), (f[u++] = (a[h] >>> 24) & 255);
-            (a = []), (u = 0), (l = 0), (o[8] = (o[8] + 1) >>> 0), (o[9] = 0 == o[8] ? (o[9] + 1) >>> 0 : o[9]);
+                (a[4] = (a[4] ^ rotl(a[0] + a[12], $[0])) >>> 0),
+                    (a[8] = (a[8] ^ rotl(a[4] + a[0], $[1])) >>> 0),
+                    (a[12] = (a[12] ^ rotl(a[8] + a[4], $[2])) >>> 0),
+                    (a[0] = (a[0] ^ rotl(a[12] + a[8], $[3])) >>> 0),
+                    (a[9] = (a[9] ^ rotl(a[5] + a[1], $[0])) >>> 0),
+                    (a[13] = (a[13] ^ rotl(a[9] + a[5], $[1])) >>> 0),
+                    (a[1] = (a[1] ^ rotl(a[13] + a[9], $[2])) >>> 0),
+                    (a[5] = (a[5] ^ rotl(a[1] + a[13], $[3])) >>> 0),
+                    (a[14] = (a[14] ^ rotl(a[10] + a[6], $[0])) >>> 0),
+                    (a[2] = (a[2] ^ rotl(a[14] + a[10], $[1])) >>> 0),
+                    (a[6] = (a[6] ^ rotl(a[2] + a[14], $[2])) >>> 0),
+                    (a[10] = (a[10] ^ rotl(a[6] + a[2], $[3])) >>> 0),
+                    (a[3] = (a[3] ^ rotl(a[15] + a[11], $[0])) >>> 0),
+                    (a[7] = (a[7] ^ rotl(a[3] + a[15], $[1])) >>> 0),
+                    (a[11] = (a[11] ^ rotl(a[7] + a[3], $[2])) >>> 0),
+                    (a[15] = (a[15] ^ rotl(a[11] + a[7], $[3])) >>> 0),
+                    (a[1] = (a[1] ^ rotl(a[0] + a[3], $[0])) >>> 0),
+                    (a[2] = (a[2] ^ rotl(a[1] + a[0], $[1])) >>> 0),
+                    (a[3] = (a[3] ^ rotl(a[2] + a[1], $[2])) >>> 0),
+                    (a[0] = (a[0] ^ rotl(a[3] + a[2], $[3])) >>> 0),
+                    (a[6] = (a[6] ^ rotl(a[5] + a[4], $[0])) >>> 0),
+                    (a[7] = (a[7] ^ rotl(a[6] + a[5], $[1])) >>> 0),
+                    (a[4] = (a[4] ^ rotl(a[7] + a[6], $[2])) >>> 0),
+                    (a[5] = (a[5] ^ rotl(a[4] + a[7], $[3])) >>> 0),
+                    (a[11] = (a[11] ^ rotl(a[10] + a[9], $[0])) >>> 0),
+                    (a[8] = (a[8] ^ rotl(a[11] + a[10], $[1])) >>> 0),
+                    (a[9] = (a[9] ^ rotl(a[8] + a[11], $[2])) >>> 0),
+                    (a[10] = (a[10] ^ rotl(a[9] + a[8], $[3])) >>> 0),
+                    (a[12] = (a[12] ^ rotl(a[15] + a[14], $[0])) >>> 0),
+                    (a[13] = (a[13] ^ rotl(a[12] + a[15], $[1])) >>> 0),
+                    (a[14] = (a[14] ^ rotl(a[13] + a[12], $[2])) >>> 0),
+                    (a[15] = (a[15] ^ rotl(a[14] + a[13], $[3])) >>> 0);
+            for (h = 0; h < 16; h++) (a[h] = a[h] + o[h]), (u[f++] = 255 & a[h]), (u[f++] = (a[h] >>> 8) & 255), (u[f++] = (a[h] >>> 16) & 255), (u[f++] = (a[h] >>> 24) & 255);
+            (a = []), (f = 0), (l = 0), (o[8] = (o[8] + 1) >>> 0), (o[9] = 0 == o[8] ? (o[9] + 1) >>> 0 : o[9]);
         }
-        n ? (i[s] = r[s] ^ f[l++] ^ (_[s % _.length] + s) % 256) : (i[s] = r[s] ^ f[l++]);
+        n ? (i[s] = r[s] ^ u[l++] ^ (_[s % _.length] + s) % 256) : (i[s] = r[s] ^ u[l++]);
     }
     return (o = null), i;
 }
-function Ceilidh20(t, e) {
-    if (!e.key || 32 != e.key.length) throw "The key must be defined and 32 bytes long.";
-    if (!e.nonce || 24 != e.nonce.length) throw "The nonce must be defined and 24 bytes long.";
-    if (!e.iv) throw "The IV must be defined.";
-    if ("number" != typeof e.genIVLen) throw "The generate IV pair length must be defined and be a number.";
-    var $ = e.stateVariant && 4 == e.stateVariant.length ? e.stateVariant : [7, 12, 8, 16],
+function Ceilidh20(t, $) {
+    if (!$.key || 32 != $.key.length) throw "The key must be defined and 32 bytes long.";
+    if (!$.nonce || 24 != $.nonce.length) throw "The nonce must be defined and 24 bytes long.";
+    if (!$.iv) throw "The IV must be defined.";
+    $.genIVLen = "number" != typeof $.genIVLen || 0 >= Math.floor($.genIVLen) ? 32 : Math.floor($.genIVLen);
+    var e = $.stateVariant && 4 == $.stateVariant.length ? $.stateVariant : [7, 12, 8, 16],
         r = "undefined" != typeof Buffer,
         _ = toBytes(t),
         n = null;
-    if ((r && ((e.key = Buffer.isBuffer(e.key) ? e.key : Buffer.from(e.key)), (e.nonce = Buffer.isBuffer(e.nonce) ? e.nonce : Buffer.from(e.nonce)), ($ = Buffer.from($))), e.isEncrypt)) {
-        var o = uintArray(e.genIVLen, !0),
-            i = hexToBytes(Sha256.hash(toChars(o) + toChars(e.iv))),
-            a = Ceilidh20_main(r, $, e, _, i, 1),
-            h = Ceilidh20_main(r, $, e, o, null, 0);
+    if ((r && (($.key = Buffer.isBuffer($.key) ? $.key : Buffer.from($.key)), ($.nonce = Buffer.isBuffer($.nonce) ? $.nonce : Buffer.from($.nonce)), (e = Buffer.from(e))), $.isEncrypt)) {
+        var o = uintArray($.genIVLen, !0),
+            i = hexToBytes(Sha256.hash(toChars(o) + toChars($.iv)));
+        r && (i = Buffer.isBuffer(i) ? i : Buffer.from(i));
+        var a = Ceilidh20_main(r, e, $, _, i, 1),
+            h = Ceilidh20_main(r, e, $, o, null, 0);
         n = r ? Buffer.concat([a, h]) : a.concat(h);
     } else {
-        if (r) var l = _.slice(_.length - e.genIVLen);
-        else var l = arraySlice(_, -e.genIVLen);
-        var u = Ceilidh20_main(r, $, e, l, null, 0),
-            i = hexToBytes(Sha256.hash(toChars(u) + toChars(e.iv)));
-        (_ = r ? _.slice(0, _.length - e.genIVLen) : arraySlice(_, 0, -e.genIVLen)), (n = Ceilidh20_main(r, $, e, _, i, 1));
+        if (r) var l = _.slice(_.length - $.genIVLen);
+        else var l = arraySlice(_, -$.genIVLen);
+        var o = Ceilidh20_main(r, e, $, l, null, 0),
+            i = hexToBytes(Sha256.hash(toChars(o) + toChars($.iv)));
+        r ? ((i = Buffer.isBuffer(i) ? i : Buffer.from(i)), (_ = _.slice(0, _.length - $.genIVLen))) : (_ = arraySlice(_, 0, -$.genIVLen)), (n = Ceilidh20_main(r, e, $, _, i, 1));
     }
     return (i = null), (t = null), n;
 }
