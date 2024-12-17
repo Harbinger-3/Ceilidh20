@@ -109,10 +109,8 @@ cd Ceilidh20
 To use the cryptography in a browser, you can simply include the following script tag in your HTML:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
 ```
-
-*Note: It looks like `ceilidh20.min.js` didn’t update properly from [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js). Please use the script tag provided above instead.*
 
 ---
 
@@ -158,7 +156,7 @@ To **decrypt** data, pass `isEncrypt: false` and use the same **key**, **iv**, *
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Ceilidh20 Encryption & Decryption</title>
-   <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
 </head>
 <body>
 
@@ -271,7 +269,7 @@ You can modify the cryptographic state using the `stateVariant` parameter, which
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ceilidh20 Custom State Variant</title>
-    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Harbinger-3/Ceilidh20/src/ceilidh20.min.js"></script>
 </head>
 <body>
 
