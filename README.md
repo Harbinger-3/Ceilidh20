@@ -86,6 +86,80 @@ The `stateVariant` is an optional parameter that can adjust the internal cryptog
 
 ---
 
+## Encryption Designs
+
+### Traditional Stream Cipher Design
+
+```
+ciphertext[i] = plaintext[i] ^ keystream[i]
+```
+
+- The plaintext byte is XORed with the corresponding keystream byte.  
+- The keystream is typically generated using a cryptographic algorithm based on the key and IV/nonce.  
+- However, the output is deterministic for repeated plaintext, key, and IV/nonce combinations.  
+
+---
+
+### Ceiliedh20 Stream Cipher Design
+
+```
+ciphertext[i] = (plaintext[i] ^ keystream[i]) ^ ((newIV[i % newIV.length] + i) % 256)
+```
+
+- This design introduces a dynamic term, `((newIV[i % newIV.length] + i) % 256)`, which evolves during encryption.  
+- `newIV` is derived by hashing a generated random value with the user-provided IV:
+  - `newIV = Sha256.Hash(generatedIV + userIV)`  
+- The evolving randomness ensures that ciphertext outputs are unique, even when inputs are repeated.  
+
+---
+
+## Resilience Against Vulnerabilities
+
+### Keystream Reuse (Replay) Attacks  
+Keystream reuse is a critical weakness in stream ciphers. If the same keystream is used for multiple encryptions, attackers can XOR the ciphertexts to expose relationships between plaintexts. This design mitigates the issue by introducing evolving randomness in the ciphertext, ensuring no two encryptions are identical, even if the keystream is reused.
+
+---
+
+### Known-Plaintext Attacks (KPA)  
+If an attacker knows part of the plaintext, they can XOR it with the ciphertext to reveal the keystream, potentially compromising other encryptions. By dynamically modifying the ciphertext with evolving randomness, this design prevents the keystream from being exposed, even with known plaintext.
+
+---
+
+### Plaintext Pattern Analysis (PPA)  
+Repetitive patterns in plaintext, such as long sequences of identical characters or structured formats, can result in observable patterns in the ciphertext. This design ensures that the evolving randomness disrupts any predictable ciphertext patterns, regardless of plaintext structure.
+
+---
+
+### Ciphertext Pattern Analysis (CPA)  
+In traditional stream ciphers, repeating inputs can lead to ciphertexts with detectable patterns, especially under repeated keystream use. The evolving randomness in this design ensures that ciphertexts appear random and unique, even for structured plaintexts or repeated encryption scenarios.
+
+---
+
+### IV/Nonce Reuse Vulnerability  
+Reusing the same IV or nonce in traditional stream ciphers results in identical keystreams, producing deterministic ciphertexts for the same plaintext. This design derives `newIV` using a cryptographically secure random value, ensuring unique ciphertext outputs, even if the same IV/nonce is reused.
+
+---
+
+### Predictability of Outputs  
+Traditional stream ciphers generate deterministic outputs for repeated plaintext, key, and IV/nonce combinations. This predictability can be exploited by attackers. The evolving randomness ensures that the ciphertext is non-deterministic, even under identical input conditions.
+
+---
+
+### Statistical Weaknesses  
+Weak or biased randomness in the keystream can make ciphertext vulnerable to statistical analysis. By introducing entropy through the `newIV` and positional evolution, the ciphertext passes randomness tests and resists statistical attacks.
+
+---
+
+### Attacks Exploiting IV Management  
+Improper management of IVs or nonces, such as reusing or predicting them, compromises encryption. This design reduces reliance on strict IV management by incorporating secure randomness into `newIV`, providing a robust safeguard.
+
+---
+
+### Differential Cryptanalysis  
+Small differences in plaintext can produce predictable differences in ciphertext, revealing patterns to attackers. The evolving randomness ensures that even minor changes in plaintext result in significant, unpredictable differences in the ciphertext.
+
+---
+
 # Installation
 
 ## Terminal Installation (for local setups):
